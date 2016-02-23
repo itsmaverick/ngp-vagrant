@@ -95,7 +95,7 @@ run the following commands to test consul
 
 ```sh
 vagrant@dev:~/ngp-orchestration$ curl -i http://[Host ip]:8500/v1/catalog/nodes -X GET
-``
+```
 
 Test Marathon
 ------------------------
@@ -103,7 +103,8 @@ run the following commands to create sample applications
 
 ```sh
 vagrant@dev:~/ngp-orchestration$ curl -i http://[Host1 ip]:8080/v2/apps -X POST -H 'Content-Type: application/json' -d@/vagrant/ubuntu.json
-``
+```
+
 To destroy deployed AWS resources
 ```sh
 vagrant destroy
