@@ -5,7 +5,7 @@ PUB_NET     = "em1"
 
 Vagrant.configure("2") do |config|
     config.vm.box = "ubuntu/trusty64"
-    config.vm.network "public_network", :public_network => PUB_NET
+    config.vm.network "public_network", :public_network => "em1"
 
     config.vm.define "dev" do |dev|
         dev.vm.hostname = 'dev'
