@@ -1,0 +1,31 @@
+{
+  "id": "ubuntu",
+  "container":
+  {
+    "type": "DOCKER",
+    "docker":
+    {
+      "image": "ubuntu",
+      "parameters": [ { "key": "net", "value": "ngp" }]
+    }
+  },
+  "args": [ "bash", "-c", "while true; do sleep 5; done" ],
+  "uris": [],
+  "cpus": 0.2,
+  "healthChecks":
+  [
+    {
+      "protocol": "COMMAND",
+      "command": { "value": "echo Success" },
+      "gracePeriodSeconds": 3000,
+      "intervalSeconds": 5,
+      "timeoutSeconds": 5,
+      "maxConsecutiveFailures": 300
+    }
+  ],
+  "constraints":
+  [
+    ["hostname", "UNIQUE"]
+  ],
+  "instances": 3
+}
