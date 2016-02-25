@@ -108,6 +108,12 @@ run the following commands to test if marathon is properly deployed
 curl -i http://[Host1 ip]:8080/v2/info -X POST 
 ```
 
+What did we do untill now ?
+------------------------
+we installed, 3 servers with CP infrastructure as shown in this image.
+![alt tag](https://cloud.githubusercontent.com/assets/16764317/13334929/61891204-dbc3-11e5-811d-497a4d558bbb.png)
+
+
 Deploy sample application on CP
 ------------------------
 run the following commands to deploy sample applications
