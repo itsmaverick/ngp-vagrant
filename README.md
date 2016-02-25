@@ -5,10 +5,10 @@ Vagrant setup to spin up control plane VMS for NGP
 Dependencies
 ----------------
 Ensure that the following software is installed 
-```sh
-virtualbox: https://www.virtualbox.org/wiki/Downloads
-vagrant:    https://www.vagrantup.com/downloads.html
-```
+
+1. virtualbox: https://www.virtualbox.org/wiki/Downloads
+2. vagrant:    https://www.vagrantup.com/downloads.html
+
 
 Install the ngp-vagrant package
 ----------------
@@ -55,15 +55,18 @@ Accessing the hosts
 Default username and password for these VMS is vagrant:vagrant. VMs can be accessed using the following.
 
 ```sh
-[sada@sada-1x ngp-vagrant]$ vagrant ssh host1
-[sada@sada-1x ngp-vagrant]$ ssh vagrant@[host1 ip]
+vagrant ssh host1
+ssh vagrant@[host1 ip]
 ```
-Note down the IPAddresses of host1, host2, host3 eth1 NIC
+Ensure hostname -i returns the ipaddress not some 127.0.0.0 address. if it does fix it by adding the ipaddress in 
 
 ```sh
-vagrant@host1:~$ ifconfig eth1 | grep "inet addr"
-          inet addr:10.32.1.25  Bcast:10.32.255.255  Mask:255.255.0.0
+/etc/hosts file
+10.32.1.109 host1 host1
 ```
+
+Note down the IPAddresses of host1, host2, host3 eth1 NIC
+
 
 Dev machine setup
 ------------------------
@@ -84,9 +87,9 @@ vagrant@dev:~/ngp-orchestration$ make
 Deploy the CP on all hosts
 ------------------------
 run the cloud command to deploy CP on all hosts
-
+cgroup is the folder in which cgroup is installed on the hosts, mostly it is /cgroup or /sys/fs/cgroup
 ```sh
-cloud/cloud -log docker create <HOST IP 1> <HOST IP 2> <HOST IP 3> ...
+cloud/cloud -log docker create -cgroup=/sys/fs/cgroup <HOST IP 1> <HOST IP 2> <HOST IP 3> ...
 ```
 
 Test Consul
@@ -94,15 +97,23 @@ Test Consul
 run the following commands to test consul
 
 ```sh
-vagrant@dev:~/ngp-orchestration$ curl -i http://[Host ip]:8500/v1/catalog/nodes -X GET
+curl -i http://[Host ip]:8500/v1/catalog/nodes -X GET
 ```
 
 Test Marathon
 ------------------------
-run the following commands to create sample applications
+run the following commands to test if marathon is properly deployed
 
 ```sh
-vagrant@dev:~/ngp-orchestration$ curl -i http://[Host1 ip]:8080/v2/apps -X POST -H 'Content-Type: application/json' -d@/vagrant/ubuntu.json
+curl -i http://[Host1 ip]:8080/v2/info -X POST 
+```
+
+Deploy sample application on CP
+------------------------
+run the following commands to deploy sample applications
+
+```sh
+curl -i http://[Host1 ip]:8080/v2/apps -X POST -H 'Content-Type: application/json' -d@/vagrant/ubuntu.json
 ```
 
 Destroy the setup
