@@ -18,5 +18,10 @@ sudo rm -rf /etc/default/docker
 sudo echo 'DOCKER_OPTS="-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"' > /etc/default/docker
 sudo usermod -aG docker vagrant
 sudo service docker restart
+echo "Configuring /etc/hosts"
+new_ip=$(ip address show eth1 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//')
+name=$(hostname)
+echo "$new_ip $name $name" 
+sudo echo "$new_ip $name $name" >> /etc/hosts
 echo "Finished provisioning."
 
