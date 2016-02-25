@@ -120,5 +120,8 @@ Destroy the setup
 ------------------------
 To destroy deployed resources
 ```sh
-vagrant destroy
+//destroy all hosts
+vagrant destroy 
+//destroy a host
+vagrant destroy host1
 ```
