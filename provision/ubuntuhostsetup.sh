@@ -22,6 +22,9 @@ echo "Configuring /etc/hosts"
 new_ip=$(ip address show eth1 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//')
 name=$(hostname)
 echo "$new_ip $name $name" 
-sudo echo "$new_ip $name $name" >> /etc/hosts
+sed '10 c\
+$new_ip $name $name' /etc/hosts > a
+sudo mv a /etc/hosts
+#sudo echo "$new_ip $name $name" >> /etc/hosts
 echo "Finished provisioning."
 
