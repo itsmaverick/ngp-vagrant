@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;ngp-vagrant&gt;">
+    <CLASSES>
+      <root url="file://$USER_HOME$/work/src/github.com" />
+    </CLASSES>
+    <SOURCES />
+    <excluded>
+      <root url="file://$PROJECT_DIR$" />
+    </excluded>
+  </library>
+</component>
