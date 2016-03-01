@@ -17,9 +17,15 @@ Install the ngp-vagrant package
 git clone https://github.com/itsmaverick/ngp-vagrant
 ```
 
+Add your Gateway IP 
+------------------------
+Add your gateway IP address, look for <changeme> in provision/ubuntuhostsetup.sh & ubuntudevsetup.sh
+
+
+```sh
+
 Create Virtual BOX instances
 ------------------------
-
 To create Virtualbox instances , use the following command:
 ```sh
 vagrant up
