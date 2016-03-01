@@ -6,8 +6,8 @@ Dependencies
 ----------------
 Ensure that the following software is installed 
 
-1. virtualbox: https://www.virtualbox.org/wiki/Downloads
-2. vagrant:    https://www.vagrantup.com/downloads.html
+1. virtualbox:(5 or later) https://www.virtualbox.org/wiki/Downloads
+2. vagrant:(1.8.1 or later)    https://www.vagrantup.com/downloads.html
 
 
 Install the ngp-vagrant package
