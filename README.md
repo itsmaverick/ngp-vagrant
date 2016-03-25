@@ -95,7 +95,7 @@ Deploy the CP on all hosts
 run the cloud command to deploy CP on all hosts
 cgroup is the folder in which cgroup is installed on the hosts, mostly it is /cgroup or /sys/fs/cgroup
 ```sh
-cloud/cloud -log docker create -cgroup=/sys/fs/cgroup <HOST IP 1> <HOST IP 2> <HOST IP 3> ...
+cloud/cloud -log datacenter create -cgroup=/sys/fs/cgroup <HOST IP 1> <HOST IP 2> <HOST IP 3> ...
 ```
 
 Test Consul
