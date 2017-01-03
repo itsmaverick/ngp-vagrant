@@ -1,13 +1,15 @@
 NGP Orchestration using vagrant and virtualbox
 =================
-Vagrant setup to spin up control plane VMS for NGP 
+Vagrant setup to spin up control plane VMS for NGP
 
 Dependencies
 ----------------
-Ensure that the following software is installed 
+Ensure that the following software is installed
 
-1. virtualbox:(5 or later) https://www.virtualbox.org/wiki/Downloads
-2. vagrant:(1.8.1 or later)    https://www.vagrantup.com/downloads.html
+1. [Vagrant](https://www.vagrantup.com/downloads.html) (tested against versions 1.7.2 and 1.8.1, but it's recommended to use the latest upstream version)
+2. [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+If you'd like to run guests using [libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt) provider instead, please refer to the [following section](#create-libvirt-managed-instances)
 
 
 Install the ngp-vagrant package
@@ -17,7 +19,7 @@ Install the ngp-vagrant package
 git clone https://github.com/itsmaverick/ngp-vagrant
 ```
 
-Add your Gateway IP 
+Add your Gateway IP
 ------------------------
 Add your gateway IP address. The default gateway is router created by VirtualBox for VMs:
 ```sh
@@ -58,6 +60,53 @@ host3                     running (virtualbox)
 
 ```
 
+Create libvirt managed instances
+---
+Upstream version of Vagrant ships with support for several [providers](https://www.vagrantup.com/docs/providers/). However, some distributions ship Vagrant with no providers or plugins. Since Vagrant providers are represented by plugins you can check their presence by issuing the following command:
+
+```sh
+$ vagrant plugin list
+```
+
+At this point you have to make sure `vagrant-libvirt` provider is installed by either
+
+* Installing it via package manager
+* Using [plugin installation procedure](https://www.vagrantup.com/docs/plugins/usage.html#installation)
+
+With the first option your package manager will usually install most if not all of required dependencies. The second option, however, requires that you install libvirt and QEMU with one or more drivers [by yourself](https://github.com/vagrant-libvirt/vagrant-libvirt#installation).
+
+```sh
+$ vagrant box list
+ubuntu/trusty64 (virtualbox, 20161214.0.0)
+```
+
+In the above example no boxes suitable for running with the libvirt provider are present. Despite the chosen box not supporting the provider it can be converted to a box which does support it using [vagrant-mutate](https://github.com/sciurus/vagrant-mutate#vagrant-mutate) plugin.
+
+Considering you have no boxes on your local storage the following list of commands will provide you with required box:
+
+```sh
+# Download virtualbox capable box to you local storage.
+$ vagrant box add ubuntu/trusty64
+# Convert the downloaded box to be libvirt capable.
+$ vagrant mutate --input-provider virtualbox trusty64 libvirt
+# Double check the list.
+$ vagrant box list
+ubuntu/trusty64 (libvirt, 20161214.0.0)
+ubuntu/trusty64 (virtualbox, 20161214.0.0)
+```
+
+Now you're ready to create libvirt instances:
+
+```sh
+vagrant up
+```
+
+There are several differences between configuration of VirtualBox and libvirt instances: *synced folders* and *networking*.
+
+Vagrant is trying to create a `/vagrant` synced folder using NFS shares by default. The issue with this approach is that on most tested environments the NFS service was cut out from the virtual network using a firewall. To make it work out of the box the folder synced by default was disabled. If you need this functionality to work you can add a firewall rule to enable external connection to NFS services and enable the synced folder by commenting out the disabling statement.
+
+The second difference is that no public network is created for guests. Instead the [management interface](https://github.com/vagrant-libvirt/vagrant-libvirt#management-network) is used to connect host with guest machines, provide them with route to external network and interconnect guests themselves.
+
 Accessing the hosts
 ------------------------
 Default username and password for these VMS is vagrant:vagrant. VMs can be accessed using the following.
@@ -66,7 +115,7 @@ Default username and password for these VMS is vagrant:vagrant. VMs can be acces
 vagrant ssh host1
 ssh vagrant@[host1 ip]
 ```
-Ensure hostname -i returns the ipaddress not some 127.0.0.0 address. if it does fix it by adding the ipaddress in 
+Ensure hostname -i returns the ipaddress not some 127.0.0.0 address. if it does fix it by adding the ipaddress in
 
 ```sh
 /etc/hosts file
@@ -120,7 +169,7 @@ Test Marathon
 run the following commands to test if marathon is properly deployed
 
 ```sh
-curl -i http://[Host1 ip]:8080/v2/info -X POST 
+curl -i http://[Host1 ip]:8080/v2/info -X POST
 ```
 
 What did we do untill now ?
@@ -142,7 +191,7 @@ Destroy the setup
 To destroy deployed resources
 ```sh
 //destroy all hosts
-vagrant destroy 
+vagrant destroy
 //destroy a host
 vagrant destroy host1
 ```
