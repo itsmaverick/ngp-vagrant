@@ -1,4 +1,4 @@
-NUM_HOSTS   = 1
+NUM_HOSTS   = 3
 HOST_RAM    = 2048
 
 Vagrant.configure("2") do |config|
