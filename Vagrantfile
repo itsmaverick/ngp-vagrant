@@ -8,8 +8,7 @@ Vagrant.configure("2") do |config|
         config.vm.network "public_network"
     end
     config.vm.provider :libvirt do
-        # Comment this out if you need the folder to be synced.
-        config.vm.synced_folder ".", "/vagrant", disabled: true
+        config.vm.synced_folder ".", "/vagrant", type: "rsync"
     end
 
     config.vm.define "dev" do |dev|
