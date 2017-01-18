@@ -4,11 +4,12 @@ HOST_RAM    = 2048
 Vagrant.configure("2") do |config|
     config.vm.box = "ubuntu/trusty64"
 
-    config.vm.provider :virtualbox do
-        config.vm.network "public_network"
+    config.vm.provider :virtualbox do |__, override|
+        override.vm.network "public_network"
     end
-    config.vm.provider :libvirt do
-        config.vm.synced_folder ".", "/vagrant", type: "rsync"
+    config.vm.provider :libvirt do |__, override|
+        override.vm.network "public_network", dev: "eno1"
+        override.vm.synced_folder ".", "/vagrant", type: "rsync"
     end
 
     config.vm.define "dev" do |dev|
