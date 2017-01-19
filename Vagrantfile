@@ -1,6 +1,6 @@
 NUM_HOSTS   = 3
 HOST_RAM    = 2048
-BRIDGE_IFACE = "eno1"
+BRIDGE_IFACE = "eth0"
 
 Vagrant.configure("2") do |config|
     config.vm.box = "ubuntu/trusty64"

@@ -6,7 +6,7 @@ Dependencies
 ----------------
 Ensure that the following software is installed
 
-1. [Vagrant](https://www.vagrantup.com/downloads.html) (tested against versions 1.7.2 and 1.8.1, but it's recommended to use the latest upstream version)
+1. [Vagrant](https://www.vagrantup.com/downloads.html) (tested against versions 1.7.2, 1.8.1 and 1.8.5, but it's recommended to use the latest upstream version)
 2. [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 
 If you'd like to run guests using [libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt) provider instead, please refer to the [following section](#create-libvirt-managed-instances)
@@ -101,11 +101,18 @@ Now you're ready to create libvirt instances:
 vagrant up
 ```
 
-There are several differences between configuration of VirtualBox and libvirt instances: *synced folders* and *networking*.
+### Troubleshooting
 
-Vagrant is trying to create a `/vagrant` synced folder using NFS shares by default. The issue with this approach is that on most tested environments the NFS service was cut out from the virtual network using a firewall. To make it work out of the box the folder synced by default was disabled. If you need this functionality to work you can add a firewall rule to enable external connection to NFS services and enable the synced folder by commenting out the disabling statement.
-
-The second difference is that no public network is created for guests. Instead the [management interface](https://github.com/vagrant-libvirt/vagrant-libvirt#management-network) is used to connect host with guest machines, provide them with route to external network and interconnect guests themselves.
+* `Call to virConnectOpen failed: Failed to connect socket to '/var/run/libvirt/libvirt-sock': No such file or directory` error is seen in the log while trying to set instances up
+    - On some distros the `libvirtd` service is stopped by default after installation. Bring it up using `system service libvirtd start` or a similar command for your distro
+* `Call to virConnectOpen failed: Failed to connect socket to '/var/run/libvirt/virtlogd-sock': No such file or Directory` error is seen in the log while trying to set instances up
+    - Same as above. Bring `virtlogd` service up
+* `Call to virDomainCreateWithFlags failed: Unable to get index for interface eth0: No such device` error is seen in the log while trying to set instances up
+    - Unlike with the `virtualbox` provider the `libvirt` provider is unable to set up adapter for a public network interactively. Current workaround is to modify `BRIDGE_IFACE` global in the `Vagrantfile` to point to an interface the public network will bridge to
+* I've set `BRIDGE_IFACE` to my WLAN interface. Instances are brought up, but there's no connectivity
+    - Due to `vagrant-libvirt` [use of MACVTAP driver](https://github.com/vagrant-libvirt/vagrant-libvirt#networks) the public network will likely work only with cable connection, since most wireless bridges reject frames with MAC addresses different from the MAC address of the wireless device physically connected to the network
+* The vagrant folder is shared only in a single direction (host to guest) and doesn't update after instances have been started
+    - Due to Vagrant's behaviour of capability exploration there's no guarantee that NFS shares won't be used to sync folders. The problem with NFS shares is that they are usually cut out from guests using a firewall. In order to make shares work out of the box, the ["rsync"](https://www.vagrantup.com/docs/synced-folders/rsync.html) type is forced. If you find it insufficient, you can modify `Vagrantfile` in order to force NFS shares and make them work on your distro ([fedora example](https://developer.fedoraproject.org/tools/vagrant/vagrant-nfs.html#synced-folders-with-nfs))
 
 Accessing the hosts
 ------------------------
