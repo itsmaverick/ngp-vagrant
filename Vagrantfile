@@ -1,5 +1,6 @@
 NUM_HOSTS   = 3
 HOST_RAM    = 2048
+BRIDGE_IFACE = "eno1"
 
 Vagrant.configure("2") do |config|
     config.vm.box = "ubuntu/trusty64"
@@ -8,7 +9,7 @@ Vagrant.configure("2") do |config|
         override.vm.network "public_network"
     end
     config.vm.provider :libvirt do |__, override|
-        override.vm.network "public_network", dev: "eno1"
+        override.vm.network "public_network", dev: BRIDGE_IFACE
         override.vm.synced_folder ".", "/vagrant", type: "rsync"
     end
 
