@@ -15,6 +15,8 @@ echo "Provisioning virtual machine..."
 #sudo route del -net 0.0.0.0 
 # santa clara your gw is 10.32.0.1, canada:172.31.1.1 add your gateway ip here
 #sudo route add -net 0.0.0.0 gw 10.32.0.1  dev eth1
+# 10.0.2.2 - router created by VirtualBox for VMs. You should check this.
+sudo ip route add default via 10.0.2.2
 
 echo "Installing Docker"
 sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
