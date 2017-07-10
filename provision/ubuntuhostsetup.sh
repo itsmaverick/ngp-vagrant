@@ -7,6 +7,9 @@ sudo ip link set dev eth0 down && ip link set eth0 name eth00 && ip link set dev
 sudo ip link set dev eth1 down && ip link set eth1 name eth0 && ip link set dev eth0 up
 sudo ip link set dev eth00 down && ip link set eth00 name eth1 && ip link set dev eth1 up
 
+# We need to turn off ipv6 due to issues with it in VMs
+sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+
 echo "Provisioning virtual machine..."
 #echo "adding gateway..."
 #sudo route del -net 0.0.0.0 
