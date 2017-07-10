@@ -98,8 +98,9 @@ run the cloud command to deploy CP on all hosts
 cgroup is the folder in which cgroup is installed on the hosts, mostly it is /cgroup or /sys/fs/cgroup
 ```sh
 cloud/cloud --log [string] dc create --space 192.0.0.0/12 -network 192.2.0.0/16 
-cloud/cloud --log [string] dc attach <HOST1 IP> <HOST2 IP> <HOST3 IP>
+cloud/cloud --log [string] dc -u [username] -p [password] attach <HOST1 IP> <HOST2 IP> <HOST3 IP>
 ```
+NOTE that you need a credentials to run "cloud dc attach" command.
 
 For EPAM developers: you should change the first command due to conflict with EPAM network
 ```sh
