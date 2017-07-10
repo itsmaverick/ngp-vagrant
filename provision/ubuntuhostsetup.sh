@@ -37,7 +37,8 @@ sudo cp -rf /vagrant/docker.cfg /etc/default/docker
 sudo usermod -aG docker vagrant
 sudo service docker restart
 echo "Configuring /etc/hosts"
-new_ip=$(ip address show eth1 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//')
+# CP uses eth0 interface, so new_ip should be taken from eth0
+new_ip=$(ip address show eth0 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//')
 name=$(hostname)
 echo "$new_ip $name $name" 
 sed "10 c\
