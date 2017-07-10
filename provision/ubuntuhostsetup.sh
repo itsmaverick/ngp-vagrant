@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# We need to rename some interfaces due to conflict between vagrant and CP (vagrant
+# creates NAT interface for access Internet through eth0 and CP is trying to use
+# eth0 for connection between nodes)
+sudo ip link set dev eth0 down && ip link set eth0 name eth00 && ip link set dev eth00 up
+sudo ip link set dev eth1 down && ip link set eth1 name eth0 && ip link set dev eth0 up
+sudo ip link set dev eth00 down && ip link set eth00 name eth1 && ip link set dev eth1 up
+
 echo "Provisioning virtual machine..."
 #echo "adding gateway..."
 #sudo route del -net 0.0.0.0 
