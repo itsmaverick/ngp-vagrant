@@ -24,8 +24,11 @@ sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58
 # Ubuntu Trusty 
 sudo echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" > /etc/apt/sources.list.d/docker.list
 
+# This command is actual for Belarus. Please comment it if you are going to use original repo
+sudo sed -i 's/archive.ubuntu.com/by.archive.ubuntu.com/g' /etc/apt/sources.list
 sudo apt-get update
-sudo apt-get install docker-engine=1.9.1-0~trusty -y > /dev/null
+# We need to install docker-engine v.1.13.1-0~ubuntu-trusty instead of previos 1.9.1-0~trusty
+sudo apt-get install docker-engine=1.13.1-0~ubuntu-trusty -y > /dev/null
 
 
 sudo groupadd docker
