@@ -41,9 +41,13 @@ echo "Configuring /etc/hosts"
 new_ip=$(ip address show eth0 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//')
 name=$(hostname)
 echo "$new_ip $name $name" 
-sed "10 c\
-$new_ip $name $name" /etc/hosts > a
+# It's better to change /etc/hosts in the following manner instead of previous one
+echo "$new_ip $name $name
+127.0.0.1 localhost">a
 sudo mv a /etc/hosts
+#sed "10 c\
+#$new_ip $name $name" /etc/hosts > a
+#sudo mv a /etc/hosts
 
 # Git
 #echo "Installing Git"
