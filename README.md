@@ -19,7 +19,11 @@ git clone https://github.com/itsmaverick/ngp-vagrant
 
 Add your Gateway IP 
 ------------------------
-Add your gateway IP address, look for <changeme> in provision/ubuntuhostsetup.sh
+Add your gateway IP address. The default gateway is router created by VirtualBox for VMs:
+```sh
+sudo ip route add default via 10.0.2.2
+```
+Change this ip if required in provision/ubuntuhostsetup.sh
 
 
 Create Virtual BOX instances
@@ -93,10 +97,13 @@ Deploy the CP on all hosts
 run the cloud command to deploy CP on all hosts
 cgroup is the folder in which cgroup is installed on the hosts, mostly it is /cgroup or /sys/fs/cgroup
 ```sh
-cloud/cloud -log dc create -cgroup=/sys/fs/cgroup -space 192.0.0.0/12 -network 192.2.0.0/16 
-cloud/cloud -log dc attach -cgroup=/sys/fs/cgroup  <HOST1 IP>
-cloud/cloud -log dc attach -cgroup=/sys/fs/cgroup  <HOST2 IP>
-cloud/cloud -log dc attach -cgroup=/sys/fs/cgroup  <HOST3 IP>
+cloud/cloud --log [string] dc create --space 192.0.0.0/12 -network 192.2.0.0/16 
+cloud/cloud --log [string] dc attach <HOST1 IP> <HOST2 IP> <HOST3 IP>
+```
+
+For EPAM developers: you should change the first command due to conflict with EPAM network
+```sh
+cloud/cloud --log [string] dc create --space 192.168.0.0/16 --network 192.168.0.0/12 
 ```
 
 Test Consul
