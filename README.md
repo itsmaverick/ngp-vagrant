@@ -1,13 +1,15 @@
 NGP Orchestration using vagrant and virtualbox
 =================
-Vagrant setup to spin up control plane VMS for NGP 
+Vagrant setup to spin up control plane VMS for NGP
 
 Dependencies
 ----------------
-Ensure that the following software is installed 
+Ensure that the following software is installed
 
-1. virtualbox:(5 or later) https://www.virtualbox.org/wiki/Downloads
-2. vagrant:(1.8.1 or later)    https://www.vagrantup.com/downloads.html
+1. [Vagrant](https://www.vagrantup.com/downloads.html) (tested against versions 1.7.2, 1.8.1 and 1.8.5, but it's recommended to use the latest upstream version)
+2. [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+If you'd like to run guests using [libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt) provider instead, please refer to the [following section](#create-libvirt-managed-instances)
 
 
 Install the ngp-vagrant package
@@ -17,7 +19,7 @@ Install the ngp-vagrant package
 git clone https://github.com/itsmaverick/ngp-vagrant
 ```
 
-Add your Gateway IP 
+Add your Gateway IP
 ------------------------
 Add your gateway IP address. The default gateway is router created by VirtualBox for VMs:
 ```sh
@@ -58,6 +60,60 @@ host3                     running (virtualbox)
 
 ```
 
+Create libvirt managed instances
+---
+Upstream version of Vagrant ships with support for several [providers](https://www.vagrantup.com/docs/providers/). However, some distributions ship Vagrant with no providers or plugins. Since Vagrant providers are represented by plugins you can check their presence by issuing the following command:
+
+```sh
+$ vagrant plugin list
+```
+
+At this point you have to make sure `vagrant-libvirt` provider is installed by either
+
+* Installing it via package manager
+* Using [plugin installation procedure](https://www.vagrantup.com/docs/plugins/usage.html#installation)
+
+With the first option your package manager will usually install most if not all of required dependencies. The second option, however, requires that you install libvirt and QEMU with one or more drivers [by yourself](https://github.com/vagrant-libvirt/vagrant-libvirt#installation).
+
+```sh
+$ vagrant box list
+ubuntu/trusty64 (virtualbox, 20161214.0.0)
+```
+
+In the above example no boxes suitable for running with the libvirt provider are present. Despite the chosen box not supporting the provider it can be converted to a box which does support it using [vagrant-mutate](https://github.com/sciurus/vagrant-mutate#vagrant-mutate) plugin.
+
+Considering you have no boxes on your local storage the following list of commands will provide you with required box:
+
+```sh
+# Download virtualbox capable box to you local storage.
+$ vagrant box add ubuntu/trusty64
+# Convert the downloaded box to be libvirt capable.
+$ vagrant mutate --input-provider virtualbox trusty64 libvirt
+# Double check the list.
+$ vagrant box list
+ubuntu/trusty64 (libvirt, 20161214.0.0)
+ubuntu/trusty64 (virtualbox, 20161214.0.0)
+```
+
+Now you're ready to create libvirt instances:
+
+```sh
+vagrant up
+```
+
+### Troubleshooting
+
+* `Call to virConnectOpen failed: Failed to connect socket to '/var/run/libvirt/libvirt-sock': No such file or directory` error is seen in the log while trying to set instances up
+    - On some distros the `libvirtd` service is stopped by default after installation. Bring it up using `system service libvirtd start` or a similar command for your distro
+* `Call to virConnectOpen failed: Failed to connect socket to '/var/run/libvirt/virtlogd-sock': No such file or Directory` error is seen in the log while trying to set instances up
+    - Same as above. Bring `virtlogd` service up
+* `Call to virDomainCreateWithFlags failed: Unable to get index for interface eth0: No such device` error is seen in the log while trying to set instances up
+    - Unlike with the `virtualbox` provider the `libvirt` provider is unable to set up adapter for a public network interactively. Current workaround is to modify `BRIDGE_IFACE` global in the `Vagrantfile` to point to an interface the public network will bridge to
+* I've set `BRIDGE_IFACE` to my WLAN interface. Instances are brought up, but there's no connectivity
+    - Due to `vagrant-libvirt` [use of MACVTAP driver](https://github.com/vagrant-libvirt/vagrant-libvirt#networks) the public network will likely work only with cable connection, since most wireless bridges reject frames with MAC addresses different from the MAC address of the wireless device physically connected to the network
+* The vagrant folder is shared only in a single direction (host to guest) and doesn't update after instances have been started
+    - Due to Vagrant's behaviour of capability exploration there's no guarantee that NFS shares won't be used to sync folders. The problem with NFS shares is that they are usually cut out from guests using a firewall. In order to make shares work out of the box, the ["rsync"](https://www.vagrantup.com/docs/synced-folders/rsync.html) type is forced. If you find it insufficient, you can modify `Vagrantfile` in order to force NFS shares and make them work on your distro ([fedora example](https://developer.fedoraproject.org/tools/vagrant/vagrant-nfs.html#synced-folders-with-nfs))
+
 Accessing the hosts
 ------------------------
 Default username and password for these VMS is vagrant:vagrant. VMs can be accessed using the following.
@@ -66,7 +122,7 @@ Default username and password for these VMS is vagrant:vagrant. VMs can be acces
 vagrant ssh host1
 ssh vagrant@[host1 ip]
 ```
-Ensure hostname -i returns the ipaddress not some 127.0.0.0 address. if it does fix it by adding the ipaddress in 
+Ensure hostname -i returns the ipaddress not some 127.0.0.0 address. if it does fix it by adding the ipaddress in
 
 ```sh
 /etc/hosts file
@@ -120,7 +176,7 @@ Test Marathon
 run the following commands to test if marathon is properly deployed
 
 ```sh
-curl -i http://[Host1 ip]:8080/v2/info -X POST 
+curl -i http://[Host1 ip]:8080/v2/info -X POST
 ```
 
 What did we do untill now ?
@@ -142,7 +198,7 @@ Destroy the setup
 To destroy deployed resources
 ```sh
 //destroy all hosts
-vagrant destroy 
+vagrant destroy
 //destroy a host
 vagrant destroy host1
 ```

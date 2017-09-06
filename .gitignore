@@ -1,1 +1,5 @@
+# Skip Vagrant directory.
 .vagrant/
+
+# Skip editor swap files.
+*.swp
